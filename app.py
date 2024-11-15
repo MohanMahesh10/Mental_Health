@@ -56,4 +56,6 @@ def get_advice():
         })
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    # Update the host and port configuration
+    port = os.getenv('PORT', 5000)
+    app.run(host='0.0.0.0', port=int(port)) 

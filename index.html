@@ -1,0 +1,23 @@
+<script>
+    async function getAdvice() {
+        const userMessage = document.getElementById('userInput').value;
+        try {
+            const response = await fetch('/api/get_advice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query: userMessage })
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                document.getElementById('response').textContent = data.advice;
+            } else {
+                document.getElementById('response').textContent = 'Error: ' + data.advice;
+            }
+        } catch (error) {
+            document.getElementById('response').textContent = 'Error connecting to the service';
+        }
+    }
+</script> 
