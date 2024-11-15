@@ -2,18 +2,33 @@
 <html>
 <head>
     <title>Mental Health Assistant</title>
+    <style>
+        .error { color: red; }
+        .loading { color: blue; }
+        #response { margin-top: 20px; }
+    </style>
 </head>
 <body>
     <h1>Mental Health Assistant</h1>
     <div>
-        <textarea id="userInput" rows="4" cols="50"></textarea>
+        <textarea id="userInput" rows="4" cols="50" placeholder="Type your message here..."></textarea>
         <button onclick="getAdvice()">Get Advice</button>
     </div>
     <div id="response"></div>
     <script>
         async function getAdvice() {
+            const responseDiv = document.getElementById('response');
             const userMessage = document.getElementById('userInput').value;
+            
+            if (!userMessage.trim()) {
+                responseDiv.innerHTML = '<p class="error">Please enter a message</p>';
+                return;
+            }
+
+            responseDiv.innerHTML = '<p class="loading">Getting response...</p>';
+
             try {
+                console.log('Sending request to API...');
                 const response = await fetch('/api/get_advice', {
                     method: 'POST',
                     headers: {
@@ -21,15 +36,19 @@
                     },
                     body: JSON.stringify({ query: userMessage })
                 });
+                
+                console.log('Response status:', response.status);
                 const data = await response.json();
+                console.log('API Response:', data);
                 
                 if (data.success) {
-                    document.getElementById('response').textContent = data.advice;
+                    responseDiv.innerHTML = `<p>${data.advice}</p>`;
                 } else {
-                    document.getElementById('response').textContent = 'Error: ' + data.advice;
+                    responseDiv.innerHTML = `<p class="error">Error: ${data.advice}</p>`;
                 }
             } catch (error) {
-                document.getElementById('response').textContent = 'Error connecting to the service';
+                console.error('API Error:', error);
+                responseDiv.innerHTML = `<p class="error">Error connecting to the service: ${error.message}</p>`;
             }
         }
     </script>
